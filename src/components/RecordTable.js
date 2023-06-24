@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { Button, Modal } from "flowbite-react";
 import { Router, useRouter } from "next/router";
+const jwt = require('jsonwebtoken')
 
 const RecordTable = (props) => {
     const [openModal, setOpenModal] = useState();
@@ -16,9 +17,9 @@ const RecordTable = (props) => {
     const [description, setdescription] = useState("");
     const [repoBranch, setrepoBranch] = useState("");
     const router = useRouter
-    
-    
-    
+
+
+
     const handleChange = (e) => {
         if (e.target.name === 'projectname') {
             setname(e.target.value)
@@ -59,9 +60,9 @@ const RecordTable = (props) => {
     };
 
     const handledUpdate = async (e) => {
-        let dataID =handleEdit(e)
+        let dataID = handleEdit(e)
         console.log(dataID)
-        let formData = { projectName,  title, date, description, hoursWorked, repository , repoBranch}
+        let formData = { projectName, title, date, description, hoursWorked, repository, repoBranch }
         try {
 
             let res = await fetch(
@@ -78,36 +79,84 @@ const RecordTable = (props) => {
             if (res.ok) {
                 console.log("suceess")
                 setOpenModal(undefined)
-                window.location.reload(); 
+                window.location.reload();
                 router.push('/recordsData')
-                
 
             }
 
         } catch (error) { }
     }
+
+    const handleDelete = async (e) => {
+        e.preventDefault();
+        const id = e.currentTarget.id;
+        try {
+            let res = await fetch(
+                `http://localhost:3000/api/deleteRecords?_id=${id}`,
+                {
+                    method: "DELETE",
+                    headers: {
+                        "Content-Type": "application/json",
+                    }
+
+                }
+            );
+            if (res.ok) {
+                console.log("suceess")
+                setOpenModal(undefined)
+                window.location.reload();
+                router.push('/recordsData')
+
+            }
+
+        } catch (error) { }
+    }
+
     const [DataFetcher, setDataFetcher] = useState([]);
     const getUserData = async () => {
         try {
             // Fetch data from external API
-            const res = await fetch(`http://localhost:3000/api/getRecords`);
-            const data = await res.json();
-            // console.log(data)
-            setDataFetcher(data.allRecords);
-            let data_id = [];
-            data.allRecords.map((item) => {
-                data_id.push(item._id);
+
+            const res = await fetch(`http://localhost:3000/api/getRecords`, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    // "auth-token" : localStorage.getItem('authToken')
+                }
             });
-            //   console.log(data_id);
+
+            const data = await res.json();
+            let user = jwt.decode(localStorage.getItem('authToken'))
+            // let userSpecific = data.allRecords.map((item)=>{return item.user_id})
+            // // console.log(data.allRecords.map((item)=>{
+            //     console.log(user)
+            // // }))
+            // console.log(userSpecific)
+            // console.log(userSpecific.forEach(function (value,i) {
+            //     console.log(i, value)
+            //         if (value == user.id) {
+            //             console.log(value)
+            //             // let dataspecific = data.allRecords.map()
+            //             setDataFetcher(data.allRecords)
+            //         }
+
+            // }))
+          
+            // Filter records based on user ID
+            const userRecords = data.allRecords.filter((item) => item.user_id === user.id);
+            setDataFetcher(userRecords);
+
+
+       
         } catch (error) {
-            res.status(400).json({ error: error });
+            console.log(error)
         }
     };
 
     useEffect(() => {
         getUserData();
     }, []);
-   
+
 
     return (
         <>
@@ -183,9 +232,10 @@ const RecordTable = (props) => {
                         </thead>
                         <tbody>
                             {DataFetcher.map((item, index) => {
-                                  const currentSerialNumber = serialNumber + index; // Calculate current serial number
+                                // console.log(item)
+                                const currentSerialNumber = serialNumber + index; // Calculate current serial number
                                 return (
-                                    
+
                                     <tr
                                         key={item._id}
                                         className=" bg-record_tracker_container_color bg-opacity-60"
@@ -219,14 +269,28 @@ const RecordTable = (props) => {
                                                         <path d="M362.7 19.3L314.3 67.7 444.3 197.7l48.4-48.4c25-25 25-65.5 0-90.5L453.3 19.3c-25-25-65.5-25-90.5 0zm-71 71L58.6 323.5c-10.4 10.4-18 23.3-22.2 37.4L1 481.2C-1.5 489.7 .8 498.8 7 505s15.3 8.5 23.7 6.1l120.3-35.4c14.1-4.2 27-11.8 37.4-22.2L421.7 220.3 291.7 90.3z" />
                                                     </svg>
                                                 </button>
+                                                <button
+                                                    id={item._id}
+                                                    onClick={handleDelete}
+                                                    className="px-1 mx-1 bg-gradient-to-tr from-pink-800 to-yellow-400 rounded-md text-white bg-opacity-80  border border-gray-300 focus:ring-primary-600 focus:border-primary-600 hover:border-blue-500 ">
+                                                    <svg
+                                                        xmlns="http://www.w3.org/2000/svg"
+                                                        height="20px"
+                                                        viewBox="0 0 448 512"
+                                                        className="m-2 fill-white"
+                                                    >
+                                                        <path d="M135.2 17.7C140.6 6.8 151.7 0 163.8 0H284.2c12.1 0 23.2 6.8 28.6 17.7L320 32h96c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 96 0 81.7 0 64S14.3 32 32 32h96l7.2-14.3zM32 128H416V448c0 35.3-28.7 64-64 64H96c-35.3 0-64-28.7-64-64V128zm96 64c-8.8 0-16 7.2-16 16V432c0 8.8 7.2 16 16 16s16-7.2 16-16V208c0-8.8-7.2-16-16-16zm96 0c-8.8 0-16 7.2-16 16V432c0 8.8 7.2 16 16 16s16-7.2 16-16V208c0-8.8-7.2-16-16-16zm96 0c-8.8 0-16 7.2-16 16V432c0 8.8 7.2 16 16 16s16-7.2 16-16V208c0-8.8-7.2-16-16-16z" />
+                                                    </svg>
+                                                </button>
                                                 <Modal
-                                                // show={openModal === item._id}
-                                                   show={openModal === item._id} // to open modal with a unique element id
+                                                    // show={openModal === item._id}
+                                                    show={openModal === item._id} // to open modal with a unique element id
                                                     onClose={() => setOpenModal(undefined)}
+                                                    className="overflow-y"
                                                 >
-                                                    <Modal.Header>Update Your Record</Modal.Header>
-                                                    <Modal.Body id={item._id}>
-                                                        <form className="p-4">
+                                                    <Modal.Header className="my-2 mx-4 fill-white text-lg">Update Your Record</Modal.Header>
+                                                    <Modal.Body className="" >
+                                                        <form className="p-4 bg-record_tracker_container_color bg-opacity-60 rounded-xl">
                                                             <div className="grid gap-6 mb-6 md:grid-cols-2">
                                                                 <div>
                                                                     <label
@@ -364,20 +428,11 @@ const RecordTable = (props) => {
                                                         </form>
                                                     </Modal.Body>
                                                     <Modal.Footer>
-                                                        <Button id={item._id}  onClick={handledUpdate}>Update</Button>
+                                                        <Button id={item._id} onClick={handledUpdate}>Update</Button>
                                                     </Modal.Footer>
                                                 </Modal>
 
-                                                <button className="px-1 mx-1 bg-gradient-to-tr from-pink-800 to-yellow-400 rounded-md text-white bg-opacity-80  border border-gray-300 focus:ring-primary-600 focus:border-primary-600 hover:border-blue-500 ">
-                                                    <svg
-                                                        xmlns="http://www.w3.org/2000/svg"
-                                                        height="20px"
-                                                        viewBox="0 0 448 512"
-                                                        className="m-2 fill-white"
-                                                    >
-                                                        <path d="M135.2 17.7C140.6 6.8 151.7 0 163.8 0H284.2c12.1 0 23.2 6.8 28.6 17.7L320 32h96c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 96 0 81.7 0 64S14.3 32 32 32h96l7.2-14.3zM32 128H416V448c0 35.3-28.7 64-64 64H96c-35.3 0-64-28.7-64-64V128zm96 64c-8.8 0-16 7.2-16 16V432c0 8.8 7.2 16 16 16s16-7.2 16-16V208c0-8.8-7.2-16-16-16zm96 0c-8.8 0-16 7.2-16 16V432c0 8.8 7.2 16 16 16s16-7.2 16-16V208c0-8.8-7.2-16-16-16zm96 0c-8.8 0-16 7.2-16 16V432c0 8.8 7.2 16 16 16s16-7.2 16-16V208c0-8.8-7.2-16-16-16z" />
-                                                    </svg>
-                                                </button>
+
                                             </div>
                                         </td>
                                     </tr>

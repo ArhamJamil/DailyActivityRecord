@@ -5,7 +5,7 @@ const dbConnection = handler => async (req,res) =>{
         try {
             let abc = await mongoose.connect("mongodb+srv://ArhamJamil:MUHAMMADAJ1290@recordtrackercluster.tsbcess.mongodb.net/");
             if(abc){
-                console.log("connection sucess")
+                // console.log("connection sucess")
                 return handler (req,res)
             }
           } catch (error) {

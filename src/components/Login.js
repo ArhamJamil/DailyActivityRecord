@@ -2,14 +2,20 @@ import Link from 'next/link'
 import React from 'react'
 import { useState } from 'react'
 import { useRouter } from 'next/router'
-const Login = (props: any) => {
+import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer, toast } from 'react-toastify';
+
+
+
+
+const Login = (props) => {
     const [email, setemail] = useState()
     const [password, setpassword] = useState()
 
     const router = useRouter()
 
 
-    const handleChange = (e: any) => {
+    const handleChange = (e) => {
 
         if (e.target.name === 'email') {
             setemail(e.target.value)
@@ -19,7 +25,7 @@ const Login = (props: any) => {
         }
 
     }
-    const handleSubmit = async (e: any) => {
+    const handleSubmit = async (e) => {
         e.preventDefault()
         let formData = { email, password }
         try {
@@ -27,14 +33,41 @@ const Login = (props: any) => {
                 method: "POST", // or 'PUT'
                 headers: {
                     "Content-Type": "application/json",
+                    // "auth-token" : localStorage.getItem('authToken')
                 },
                 body: JSON.stringify(formData),
             });
             if (response.ok) {
-                console.log("logged in successfully")
-                router.push('recordsData')
-            }else{
-                window.alert("User not Found ")
+                // console.log("logged in successfully")
+                let resData = await response.json()
+                console.log(resData.jwtToken)
+                localStorage.setItem('authToken', resData.jwtToken)
+                // localStorage.setItem('token', response.jwtToken)
+                toast.success(' logged in sucessfully!', {
+                    position: "top-right",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "light",
+                });
+                setTimeout(() => {
+                    router.push('recordsData')
+                }, 1500);
+
+            } else {
+                toast.warning('Credential not valid !', {
+                    position: "top-right",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "light",
+                });
             }
 
         } catch (error) {
@@ -43,6 +76,20 @@ const Login = (props: any) => {
     }
     return (
         <div>
+            <ToastContainer
+                position="top-right"
+                autoClose={5000}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+                theme="light"
+            />
+            {/* Same as */}
+            <ToastContainer />
             <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto my-50 ">
 
                 <div className="w-full  rounded-lg shadow dark:border my-48 sm:max-w-md xl:p-0 bg-record_tracker_container_color bg-opacity-60 dark:border-gray-700">

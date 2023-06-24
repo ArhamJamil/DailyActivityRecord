@@ -1,5 +1,7 @@
 import recordtableSchema from '../../model/recordtableSchema'
 import dbConnection from '../../db/dbConn'
+import userSchema from '../../model/userSchema'
+var jwt = require('jsonwebtoken');
 
 
 
@@ -7,6 +9,9 @@ import dbConnection from '../../db/dbConn'
 const handler = async (req, res) => {
     if (req.method === "POST") {
         try {
+            // let jwtToken = localStorage.getItem('authToken')
+            // let decoded = jwt.verify(jwtToken,  'JWT_PRIVATE_KEY_ARHAM'); 
+            console.log(req.body.user_id)
             let formData = new recordtableSchema({
                 projectName: req.body.projectName,
                 projectOption: req.body.projectOption,
@@ -15,11 +20,14 @@ const handler = async (req, res) => {
                 description: req.body.description,
                 title: req.body.title,
                 date: req.body.date,
-                repoBranch: req.body.repoBranch
+                repoBranch: req.body.repoBranch,
+                user_id: req.body.user_id
             })
+           
+            
             let userRecord = await formData.save()
             if(userRecord){
-                console.log("success")
+                // console.log("success")
                 res.status(200).json({success:"success"})
             }
         } catch (error) {

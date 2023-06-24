@@ -8,6 +8,7 @@ const handler = async (req, res) => {
     if (req.method === "GET") {
         try {
             let records = await recordtableSchema.find()
+            console.log(records)
             if (records) {
                res.status(200).json({ allRecords: records  })
                 

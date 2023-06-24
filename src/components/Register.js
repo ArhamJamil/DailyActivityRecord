@@ -1,11 +1,12 @@
 import Link from 'next/link'
 import React from 'react'
 import { useState } from 'react'
-import { redirect } from 'next/navigation'
+import { ToastContainer, toast } from 'react-toastify';
 import { useRouter } from 'next/router'
+var CryptoJS = require("crypto-js");
+import 'react-toastify/dist/ReactToastify.css';
 
-
-const Register = (props: any) => {
+const Register = (props) => {
     const [name, setname] = useState()
     const [email, setemail] = useState()
     const [password, setpassword] = useState()
@@ -13,7 +14,7 @@ const Register = (props: any) => {
     const router = useRouter()
 
 
-    const handleChange = (e: any) => {
+    const handleChange = (e) => {
         if (e.target.name === 'name') {
             setname(e.target.value)
         }
@@ -27,35 +28,88 @@ const Register = (props: any) => {
             setcpassword(e.target.value)
         }
     }
-    const handleRegister = async (e: any) => {
+    const handleRegister = async (e) => {
         e.preventDefault()
-        let formData = { name, email, password, cpassword }
+        let pw = CryptoJS.AES.encrypt(password, 'ArhamCryptoSecretKEY').toString()
+        let cpw = CryptoJS.AES.encrypt(cpassword, 'ArhamCryptoSecretKEY').toString()
+        let dpw = CryptoJS.AES.decrypt(pw, 'ArhamCryptoSecretKEY').toString(CryptoJS.enc.Utf8)
+        let dcpw = CryptoJS.AES.decrypt(cpw, 'ArhamCryptoSecretKEY').toString(CryptoJS.enc.Utf8)
+        let formData = { name, email, pw, cpw }
         try {
-            if (password == cpassword) {
+            if (dpw == dcpw) {
                 const response = await fetch("http://localhost:3000/api/registerData", {
                     method: "POST", // or 'PUT'
                     headers: {
                         "Content-Type": "application/json",
+                        "auth-token" : localStorage.getItem('authToken')
                     },
                     body: JSON.stringify(formData),
                 });
                 if (response.ok) {
-                    console.log("Success:");
-                    window.alert("Form submited sucessfully")
-                    router.push('/')
+                    // console.log("Success:");
+                    // window.alert("Form submited sucessfully")
+                    toast.success(' Form submited sucessfully!', {
+                        position: "top-right",
+                        autoClose: 5000,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                        progress: undefined,
+                        theme: "light",
+                        });
+                    
+                    setTimeout(() => {
+                        router.push('/')
+                    }, 2000);
+                }else{
+                    toast.warning(' user with email already exists !', {
+                        position: "top-right",
+                        autoClose: 5000,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                        progress: undefined,
+                        theme: "light",
+                        });
                 }
+               
             } else {
-                window.alert("password doesnot match")
+                toast.warning(' password does not match !', {
+                    position: "top-right",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "light",
+                    });
             }
 
 
         } catch (error) {
-            console.log("error")
+            
         }
     }
     return (
 
         <div>
+            <ToastContainer
+                position="top-right"
+                autoClose={5000}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+                theme="light"
+            />
+            {/* Same as */}
+            <ToastContainer />
 
             <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto my-50 ">
 

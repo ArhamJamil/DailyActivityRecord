@@ -38,6 +38,10 @@ const recordSchema = new mongoose.Schema ({
     repoBranch: {
         type:String,
         required : true
+    },
+    user_id :{
+        type:String,
+        required: true,
     }
     
 })

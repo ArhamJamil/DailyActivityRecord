@@ -2,7 +2,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/router'
 import React from 'react'
 import { useState } from 'react'
-
+const jwt = require('jsonwebtoken')
 
 const recordData = () => {
     const [projectName, setname] = useState()
@@ -16,7 +16,7 @@ const recordData = () => {
 
     const router = useRouter()
 
-    const handleChange = (e: any) => {
+    const handleChange = (e) => {
         if (e.target.name === 'projectname') {
             setname(e.target.value)
         }
@@ -42,15 +42,20 @@ const recordData = () => {
             setrepoBranch(e.target.value)
         }
     }
-    const handleRegister = async (e: any) => {
+    const handleRegister = async (e) => {
         e.preventDefault()
-        let formData = { projectName, projectOption, title, date, description, hoursWorked, repository , repoBranch}
+        let user = localStorage.getItem('authToken')
+        let id = jwt.decode(user)
+        console.log(id.id)
+        let user_id = id.id
+        let formData = { projectName, projectOption, title, date, description, hoursWorked, repository , repoBranch, user_id}
         try {
 
             const response = await fetch("http://localhost:3000/api/addRecords", {
                 method: "POST", // or 'PUT'
-                headers: {
+                headers:{
                     "Content-Type": "application/json",
+                    // "auth-token" : localStorage.getItem('authToken')
                 },
                 body: JSON.stringify(formData),
             });
@@ -145,7 +150,7 @@ const recordData = () => {
                                     <input name='repoBranch' type="text" id="repoBranch" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="master" required onChange={handleChange} />
                                 </div>
                                 <div className='my-5 mx-auto'>
-                                    <button className="  w-full px-40  hover:duration-300 hover:translate-y-1 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm p-2.5 sm:w-auto  py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800" onClick={handleRegister}>Next</button>
+                                    <button  className="   w-full px-40  hover:duration-300 hover:translate-y-1 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm p-2.5 sm:w-auto  py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800" onClick={handleRegister}>Next</button>
                                 </div>
                             </div>
 

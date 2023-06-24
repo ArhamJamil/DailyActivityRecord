@@ -18,6 +18,6 @@
       "@/*": ["./src/*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "src/pages/api/server.js", "src/components/RecordTable.js"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "src/pages/api/server.js", "src/components/RecordTable.js", "src/components/Register.js", "src/components/Login.js", "src/pages/recordData.tsx"],
   "exclude": ["node_modules"]
 }
