@@ -71,7 +71,16 @@ const Login = (props) => {
             }
 
         } catch (error) {
-            console.log("error")
+            toast.warning('Some Error has Occured !', {
+                position: "top-right",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+            });
         }
     }
     return (
@@ -115,7 +124,7 @@ const Login = (props) => {
                                         <label htmlFor="remember" className="text-gray-500 dark:text-gray-300">Remember me</label>
                                     </div>
                                 </div>
-                                <a href="#" className="text-sm font-medium  hover:underline text-gray-500 dark:text-gray-400">Forgot password?</a>
+                               <Link href={'/forgetPass'}  className="text-sm font-medium  hover:underline text-gray-500 dark:text-gray-400"> Forgot password?</Link>
                             </div>
                             <button type="submit" className="w-full text-white dark:bg-blue-900 opacity-100 hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-black-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center  dark:hover:bg-primary-700 dark:focus:ring-black-800" onClick={handleSubmit}>Sign in</button>
                             <p className="text-sm font-light text-gray-500 dark:text-gray-400">
