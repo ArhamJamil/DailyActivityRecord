@@ -18,6 +18,6 @@
       "@/*": ["./src/*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "src/pages/api/server.js", "src/components/RecordTable.js", "src/components/Register.js", "src/components/Login.js", "src/pages/recordData.tsx"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "src/pages/api/server.js", "src/components/RecordTable.js", "src/components/Register.js", "src/components/Login.js", "src/pages/recordData.tsx", "src/pages/_document.tsx", "src/pages/_app.js", "src/components/Navbar.js", "src/pages/index.js"],
   "exclude": ["node_modules"]
 }

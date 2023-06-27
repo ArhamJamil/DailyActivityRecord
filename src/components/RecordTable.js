@@ -77,7 +77,7 @@ const RecordTable = (props) => {
                 }
             );
             if (res.ok) {
-                console.log("suceess")
+                // console.log("suceess")
                 setOpenModal(undefined)
                 window.location.reload();
                 router.push('/recordsData')
@@ -102,7 +102,7 @@ const RecordTable = (props) => {
                 }
             );
             if (res.ok) {
-                console.log("suceess")
+                // console.log("suceess")
                 setOpenModal(undefined)
                 window.location.reload();
                 router.push('/recordsData')
