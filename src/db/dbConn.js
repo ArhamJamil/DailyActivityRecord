@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 
 const dbConnection = handler => async (req,res) =>{
         try {
-            let abc = await mongoose.connect("mongodb+srv://ArhamJamil:MUHAMMADAJ1290@recordtrackercluster.tsbcess.mongodb.net/");
+            let abc = await mongoose.connect(process.env.MONGODB_URI);
             if(abc){
                 // console.log("connection sucess")
                 return handler (req,res)
